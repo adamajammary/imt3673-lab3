@@ -1,103 +1,100 @@
 package com.ntnu.imt3673.imt3673_lab3;
 
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.PointF;
-import android.graphics.RectF;
-import android.support.v7.app.AppCompatActivity;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 
 /**
  * Main Activity
  */
 public class MainActivity extends AppCompatActivity {
 
-    private CanvasView canvas;
+    private CanvasView          canvas;
+    private Sensor              sensorAccel;
+    private SensorManager       sensorManager;
+    private AccelSensorListener sensorListener = new AccelSensorListener();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.canvas = new CanvasView(MainActivity.this);
+        this.canvas = new CanvasView(this);
         setContentView(this.canvas);
+
+        this.initSensors();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.sensorManager.unregisterListener(this.sensorListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (this.sensorAccel == null) {
+            this.alertMessage(getString(R.string.error_no_accel));
+            return;
+        }
+
+        this.sensorManager.registerListener(
+            this.sensorListener, this.sensorAccel, SensorManager.SENSOR_DELAY_GAME
+        );
     }
 
     /**
-     * Canvas View - custom canvas view used for drawing 2D graphics.
+     * Helper utility - Displays the message in a pop-up alert dialog.
+     * @param message Message to display
      */
-    private class CanvasView extends View {
+    private void alertMessage(final String message) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 
-        private RectF       borderPosition;
-        private float       circleRadius;
-        private PointF      circlePosition;
-        private Paint       drawPen         = new Paint();
-        private final float RECT_BORDER     = 5.0f;
-        private final float RECT_MARGIN     = 50.0f;
+        dialog.setTitle(R.string.app_name);
+        dialog.setIcon(R.mipmap.ic_launcher);
+        dialog.setMessage(message);
+        dialog.setPositiveButton("OK", (d, i) -> d.dismiss());
+        dialog.show();
+    }
+
+    /**
+     * Sets up the sensors and event listeners needed.
+     */
+    private void initSensors() {
+        this.sensorManager = getSystemService(SensorManager.class);
+        this.sensorAccel   = this.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    /**
+     * Accelerator Sensor Listener
+     */
+    private class AccelSensorListener implements SensorEventListener {
 
         /**
-         * Canvas View constructor - Sets the circle radius 5% of the display width.
-         * @param context Context
+         * Handles sensor events when a sensor has changed.
+         * SENSOR_DELAY_GAME: Updates roughly about 60 times a second.
+         * @param sensorEvent The sensor event
          */
-        public CanvasView(Context context) {
-            super(context);
-            setFocusable(true);
-
-            Point displaySize = new Point();
-            getWindowManager().getDefaultDisplay().getSize(displaySize);
-
-            this.circleRadius = ((float)displaySize.x * 0.05f);
+        @Override
+        public void onSensorChanged(final SensorEvent sensorEvent) {
+            if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                canvas.setSensorValues(sensorEvent.values);
+                canvas.invalidate();
+            }
         }
 
         /**
-         * Draw the border and circle on the canvas.
-         * @param canvas Canvas
+         * Not used, but must be overridden to implement abstract interface SensorEventListener.
+         * @param sensor The sensor
+         * @param delta The new accuracy
          */
-        public void onDraw(Canvas canvas) {
-            /**
-             * Calculate the border and circle positions once based on the canvas.
-             * Display dimensions are not guaranteed to be the same as drawable dimensions,
-             * will depend on the device and how dimensions are calculated in relation to
-             * top status bar, bottom navigation bar etc.
-             */
-            if (borderPosition == null) {
-                borderPosition = new RectF(
-                    RECT_MARGIN,
-                    RECT_MARGIN,
-                    (canvas.getWidth()  - RECT_MARGIN),
-                    (canvas.getHeight() - RECT_MARGIN)
-                );
-
-                circlePosition = new PointF(borderPosition.centerX(), borderPosition.centerY());
-            }
-
-            // Set initial pen style
-            this.drawPen.setAntiAlias(true);
-            this.drawPen.setColor(Color.BLACK);
-            this.drawPen.setStyle(Paint.Style.FILL);
-            this.drawPen.setTextSize(30.0f);
-
-            // Fill background
-            this.drawPen.setStyle(Paint.Style.FILL);
-            canvas.drawColor(Color.WHITE);
-
-            // Draw border
-            this.drawPen.setStyle(Paint.Style.STROKE);
-            this.drawPen.setStrokeWidth(RECT_BORDER);
-            canvas.drawRect(
-                RECT_MARGIN, RECT_MARGIN,
-                (canvas.getWidth() - RECT_MARGIN), (canvas.getHeight() - RECT_MARGIN),
-                this.drawPen
-            );
-
-            // Draw circle
-            this.drawPen.setStyle(Paint.Style.FILL);
-            canvas.drawCircle(
-                this.circlePosition.x, this.circlePosition.y, this.circleRadius, this.drawPen
-            );
+        @Override
+        public void onAccuracyChanged(final Sensor sensor, int delta) {
         }
 
     }
