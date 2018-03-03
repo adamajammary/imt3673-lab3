@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">imt3673-lab3</string>
     <string name="error_no_accel">Unfortunately this device does not have an accelerometer.</string>
+    <string name="error_no_vibrator">Unfortunately this device does not have a vibrator.</string>
 </resources>

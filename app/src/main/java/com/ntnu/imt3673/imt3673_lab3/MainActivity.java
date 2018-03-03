@@ -5,8 +5,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+
+import java.util.ArrayList;
 
 /**
  * Main Activity
@@ -14,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 
     private CanvasView          canvas;
+    private ArrayList           resources      = new ArrayList<Integer>();
     private Sensor              sensorAccel;
     private SensorManager       sensorManager;
     private AccelSensorListener sensorListener = new AccelSensorListener();
@@ -26,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(this.canvas);
 
         this.initSensors();
+        HapticFeedbackManager.init(this);
+        this.initResources();
+        SoundManager.init(this.resources, this);
     }
 
     @Override
@@ -39,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         if (this.sensorAccel == null) {
-            this.alertMessage(getString(R.string.error_no_accel));
+            Utils.alertMessage(getString(R.string.error_no_accel), this);
             return;
         }
 
@@ -49,17 +54,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Helper utility - Displays the message in a pop-up alert dialog.
-     * @param message Message to display
+     * Sets up the resources needed like sound effects.
      */
-    private void alertMessage(final String message) {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-
-        dialog.setTitle(R.string.app_name);
-        dialog.setIcon(R.mipmap.ic_launcher);
-        dialog.setMessage(message);
-        dialog.setPositiveButton("OK", (d, i) -> d.dismiss());
-        dialog.show();
+    private void initResources() {
+        this.resources.add(R.raw.ping_001);
+        this.resources.add(R.raw.ping_002);
+        this.resources.add(R.raw.ping_003);
     }
 
     /**

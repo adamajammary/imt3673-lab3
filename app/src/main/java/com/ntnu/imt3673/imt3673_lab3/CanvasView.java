@@ -15,27 +15,21 @@ import android.view.View;
  */
 public class CanvasView extends View {
 
-    private final float  RECT_BORDER  = 5.0f;
-    private final float  RECT_MARGIN  = 50.0f;
-    private RectF        borderPosition;
-    private CircleBall   circleBall   = new CircleBall();
-    private Paint        drawPen      = new Paint();
-    private long         lastDrawTime = 0;
-    private float[]      sensorValues = new float[3];
+    private RectF      borderPosition;
+    private CircleBall circleBall   = new CircleBall();
+    private Paint      drawPen      = new Paint();
+    private long       lastDrawTime = 0;
+    private float[]    sensorValues = new float[3];
 
     /**
      * Canvas View constructor - Sets the circle radius 5% of the display width.
      * @param context Context
      */
-    public CanvasView(Context context) {
+    public CanvasView(final Context context) {
         super(context);
         setFocusable(true);
 
-        Point displaySize = new Point();
-        ((Activity)context).getWindowManager().getDefaultDisplay().getSize(displaySize);
-
-        this.circleBall.setRadius((float)displaySize.x * 0.05f);
-        this.circleBall.setSpeed(50.0f);
+        this.initCircleBall();
     }
 
     /**
@@ -51,7 +45,7 @@ public class CanvasView extends View {
         if (this.borderPosition == null)
             this.initPosition(canvas);
 
-        this.updateCirclePosition(deltaTime);
+        this.circleBall.move(deltaTime, this.borderPosition, this.sensorValues, this.getContext());
 
         canvas.drawColor(Color.WHITE);
         this.drawBorder(canvas);
@@ -65,11 +59,11 @@ public class CanvasView extends View {
         this.drawPen.setAntiAlias(true);
         this.drawPen.setColor(Color.BLACK);
         this.drawPen.setStyle(Paint.Style.STROKE);
-        this.drawPen.setStrokeWidth(RECT_BORDER);
+        this.drawPen.setStrokeWidth(Constants.RECT_BORDER);
 
         canvas.drawRect(
-            RECT_MARGIN, RECT_MARGIN,
-            (canvas.getWidth() - RECT_MARGIN), (canvas.getHeight() - RECT_MARGIN),
+            Constants.RECT_MARGIN, Constants.RECT_MARGIN,
+            (canvas.getWidth() - Constants.RECT_MARGIN), (canvas.getHeight() - Constants.RECT_MARGIN),
             this.drawPen
         );
     }
@@ -85,6 +79,17 @@ public class CanvasView extends View {
     }
 
     /**
+     * Sets up the initial properties of the circle ball.
+     */
+    private void initCircleBall() {
+        Point displaySize = new Point();
+        ((Activity)this.getContext()).getWindowManager().getDefaultDisplay().getSize(displaySize);
+
+        this.circleBall.setRadius((float)displaySize.x * Constants.BALL_SIZE_PERCENT);
+        this.circleBall.setSpeed(Constants.BALL_INIT_SPEED);
+    }
+
+    /**
      * Calculates the border and circle positions once based on the canvas.
      * Display dimensions are not guaranteed to be the same as drawable dimensions,
      * will depend on the device and how dimensions are calculated in relation to
@@ -92,8 +97,8 @@ public class CanvasView extends View {
      */
     private void initPosition(final Canvas canvas) {
         this.borderPosition = new RectF(
-            RECT_MARGIN, RECT_MARGIN,
-            (canvas.getWidth() - RECT_MARGIN), (canvas.getHeight() - RECT_MARGIN)
+            Constants.RECT_MARGIN, Constants.RECT_MARGIN,
+            (canvas.getWidth() - Constants.RECT_MARGIN), (canvas.getHeight() - Constants.RECT_MARGIN)
         );
 
         this.circleBall.setPosition(
@@ -105,30 +110,8 @@ public class CanvasView extends View {
      * Updates the values for the accelerator sensor.
      * @param sensorValues New sensor values
      */
-    public void setSensorValues(float[] sensorValues) {
+    public void setSensorValues(final float[] sensorValues) {
         this.sensorValues = sensorValues;
-    }
-
-    /**
-     * Updates the circle position based on accel sensor values.
-     * Needs to swap X and Y because of landscape mode.
-     */
-    private void updateCirclePosition(float deltaTime) {
-        PointF  oldPosition  = this.circleBall.getPosition();
-        PointF  newPosition  = new PointF(oldPosition.x, oldPosition.y);
-        float   speed        = (this.circleBall.getSpeed() * deltaTime);
-
-        if (this.sensorValues[1] > 1.0f)
-            newPosition.x = (oldPosition.x + speed);
-        else if (this.sensorValues[1] < -1.0f)
-            newPosition.x = (oldPosition.x - speed);
-
-        if (this.sensorValues[0] > 1.0f)
-            newPosition.y = (oldPosition.y + speed);
-        else if (this.sensorValues[0] < -1.0f)
-            newPosition.y = (oldPosition.y - speed);
-
-        this.circleBall.setPosition(newPosition);
     }
 
 }
