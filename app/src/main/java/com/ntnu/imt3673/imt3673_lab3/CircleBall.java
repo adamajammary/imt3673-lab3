@@ -56,14 +56,14 @@ public class CircleBall {
 
         // Calculate movement direction based on sensor values
         if (sensorValues[1] > Constants.SENSOR_MIN_VALUE)
-            deltaX = speed + (sensorValues[1] * Constants.SENSOR_MULTIPLIER);
+            deltaX = (speed + (sensorValues[1] * Constants.SENSOR_MULTIPLIER));
         else if (sensorValues[1] < -Constants.SENSOR_MIN_VALUE)
-            deltaX = -speed + (sensorValues[1] * Constants.SENSOR_MULTIPLIER);
+            deltaX = (-speed + (sensorValues[1] * Constants.SENSOR_MULTIPLIER));
 
         if (sensorValues[0] > Constants.SENSOR_MIN_VALUE)
-            deltaY = speed + (sensorValues[0] * Constants.SENSOR_MULTIPLIER);
+            deltaY = (speed + (sensorValues[0] * Constants.SENSOR_MULTIPLIER));
         else if (sensorValues[0] < -Constants.SENSOR_MIN_VALUE)
-            deltaY = -speed + (sensorValues[0] * Constants.SENSOR_MULTIPLIER);
+            deltaY = (-speed + (sensorValues[0] * Constants.SENSOR_MULTIPLIER));
 
         // Check collision with edges
         if (oldPosition.x - radius + deltaX <= border.left) {
