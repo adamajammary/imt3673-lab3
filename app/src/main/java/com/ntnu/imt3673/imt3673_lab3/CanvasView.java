@@ -15,11 +15,11 @@ import android.view.View;
  */
 public class CanvasView extends View {
 
-    private RectF      borderPosition;
-    private CircleBall circleBall   = new CircleBall();
-    private Paint      drawPen      = new Paint();
-    private long       lastDrawTime = 0;
-    private float[]    sensorValues = new float[3];
+    private RectF            borderPosition;
+    private final CircleBall circleBall   = new CircleBall();
+    private final Paint      drawPen      = new Paint();
+    private long             lastDrawTime = 0;
+    private float[]          sensorValues = new float[3];
 
     /**
      * Canvas View constructor - Sets the circle radius 5% of the display width.
@@ -45,7 +45,7 @@ public class CanvasView extends View {
         if (this.borderPosition == null)
             this.initPosition(canvas);
 
-        this.circleBall.move(deltaTime, this.borderPosition, this.sensorValues, this.getContext());
+        this.circleBall.move(deltaTime, this.borderPosition, this.sensorValues);
 
         canvas.drawColor(Color.WHITE);
         this.drawBorder(canvas);
@@ -58,8 +58,8 @@ public class CanvasView extends View {
     private void drawBorder(final Canvas canvas) {
         this.drawPen.setAntiAlias(true);
         this.drawPen.setColor(Color.BLACK);
-        this.drawPen.setStyle(Paint.Style.STROKE);
-        this.drawPen.setStrokeWidth(Constants.RECT_BORDER);
+        this.drawPen.setStyle(Paint.Style.FILL);
+        //this.drawPen.setStrokeWidth(Constants.RECT_BORDER);
 
         canvas.drawRect(
             Constants.RECT_MARGIN, Constants.RECT_MARGIN,
@@ -74,7 +74,9 @@ public class CanvasView extends View {
     private void drawCircle(final Canvas canvas) {
         PointF position = this.circleBall.getPosition();
 
+        this.drawPen.setColor(Color.RED);
         this.drawPen.setStyle(Paint.Style.FILL);
+
         canvas.drawCircle(position.x, position.y, this.circleBall.getRadius(), this.drawPen);
     }
 

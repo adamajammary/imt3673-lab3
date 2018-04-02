@@ -6,13 +6,13 @@ import android.support.v7.app.AlertDialog;
 /**
  * Helper utilities.
  */
-public final class Utils {
+final class Utils {
 
     /**
      * Displays the message in a pop-up alert dialog.
      * @param message Message to display
      */
-    public static final void alertMessage(final String message, final Context context) {
+    public static void alertMessage(final String message, final Context context) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 
         dialog.setTitle(R.string.app_name);

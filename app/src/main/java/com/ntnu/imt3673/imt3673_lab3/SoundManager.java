@@ -10,10 +10,10 @@ import java.util.Map;
 /**
  * Sound Manager
  */
-public final class SoundManager {
+final class SoundManager {
 
-    private static Map       sounds = new HashMap<Integer, Integer>();
-    private static SoundPool soundPool;
+    private static final Map<Integer, Integer> sounds = new HashMap<>();
+    private static SoundPool                   soundPool;
 
     /**
      * Sets up the sound pool.
@@ -32,9 +32,9 @@ public final class SoundManager {
      * NB! Must first be initialized with SoundManager.init(ArrayList<Integer>, Context)
      * @param resourceID Resource ID
      */
-    public static void playSound(final int resourceID, final Context context) {
+    public static void playSound(final int resourceID) {
         if (SoundManager.soundPool != null) {
-            int id = (int)sounds.get(resourceID);
+            int id = sounds.get(resourceID);
 
             SoundManager.soundPool.stop(id);
             SoundManager.soundPool.play(id, 1.0f, 1.0f, 1, 0, 1.0f);

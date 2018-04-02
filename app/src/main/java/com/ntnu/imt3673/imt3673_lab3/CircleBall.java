@@ -1,13 +1,12 @@
 package com.ntnu.imt3673.imt3673_lab3;
 
-import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
 /**
  * Circle Ball
  */
-public class CircleBall {
+class CircleBall {
 
     private float  radius;
     private PointF position;
@@ -29,7 +28,7 @@ public class CircleBall {
         this.position = position;
     }
 
-    public float getSpeed() {
+    private float getSpeed() {
         return this.speed;
     }
 
@@ -43,9 +42,8 @@ public class CircleBall {
      * @param deltaTime Draw Delta Time
      * @param border Border Position (edges/walls)
      * @param sensorValues Sensor Values
-     * @param context Context
      */
-    public void move(final float deltaTime, final RectF border, final float[] sensorValues, final Context context) {
+    public void move(final float deltaTime, final RectF border, final float[] sensorValues) {
         int     collisionType = Constants.COLLISION_NONE;
         float   deltaX        = 0;
         float   deltaY        = 0;
@@ -85,7 +83,7 @@ public class CircleBall {
         // Handle collision by vibrating and playing a sound effect
         if (collisionType != Constants.COLLISION_NONE) {
             HapticFeedbackManager.vibrate(Constants.VIBRATION_DURATION_MS);
-            SoundManager.playSound(R.raw.ping_001, context);
+            SoundManager.playSound(R.raw.ping_001);
         }
 
         // Update new position

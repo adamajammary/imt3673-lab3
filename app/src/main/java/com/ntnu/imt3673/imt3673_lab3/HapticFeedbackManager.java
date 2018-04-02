@@ -6,7 +6,7 @@ import android.os.Vibrator;
 /**
  * Haptic Feedback Manager
  */
-public final class HapticFeedbackManager {
+final class HapticFeedbackManager {
 
     private static Vibrator vibrator;
 

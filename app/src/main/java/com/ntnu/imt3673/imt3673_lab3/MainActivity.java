@@ -15,10 +15,10 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private CanvasView          canvas;
-    private ArrayList           resources      = new ArrayList<Integer>();
+    private final ArrayList<Integer>  resources      = new ArrayList<>();
     private Sensor              sensorAccel;
     private SensorManager       sensorManager;
-    private AccelSensorListener sensorListener = new AccelSensorListener();
+    private final AccelSensorListener sensorListener = new AccelSensorListener();
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -67,7 +67,12 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initSensors() {
         this.sensorManager = getSystemService(SensorManager.class);
-        this.sensorAccel   = this.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        // TODO: Should not happen
+        if (this.sensorManager == null)
+            throw new NullPointerException();
+
+        this.sensorAccel = this.sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     /**
